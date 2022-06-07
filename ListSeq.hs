@@ -6,7 +6,7 @@ import Par
 
 tabulate f n maxn | n == maxn = emptyS
                   | otherwise = let
-                                  (x,xs) =  f n ||| tabulate f (n+1)
+                                  (x,xs) =  f n ||| tabulate f (n+1) maxn
                                 in
                                   x:xs
 
@@ -56,8 +56,8 @@ instance Seq [] where
    mapS f l       = map f l
    filterS f l    = filter f l
    appendS l r    = l ++ r
-   takeS l n      = take l n
-   dropS l n      = drop l n
+   takeS l n      = take n l
+   dropS l n      = drop n l
    showtS xs      = showt xs
    showlS xs      = showl xs
    joinS ls       = concat ls
