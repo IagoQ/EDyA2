@@ -13,9 +13,13 @@ tabulate f n maxn | n == maxn = emptyS
 
 showt []  = EMPTY
 showt [x] = ELT x
-showt xs  = NODE (take xs half) (drop xs half)
+showt xs  = NODE l r
               where
-                half = div (length xs) 2
+                (l,r) = (takeS xs half) ||| (dropS xs half)
+                half = div (lengthS xs) 2
+
+showl [] = NIL
+showl (x:xs) = CONS x xs
 
 
 contractS op (x:y:zs) = let (xy, zs') = op x y ||| contractS op zs
@@ -23,7 +27,7 @@ contractS op (x:y:zs) = let (xy, zs') = op x y ||| contractS op zs
 
 contract f []       = emptyS
 contract f [x]      = [x]
-contract f (x:y:xs) = let (z,zs) = f x y ||| contraerList f xs
+contract f (x:y:xs) = let (z,zs) = f x y ||| contract f xs
                           in z:zs
 
 reduce f e []  = e
@@ -55,7 +59,7 @@ instance Seq [] where
    takeS l n      = take l n
    dropS l n      = drop l n
    showtS xs      = showt xs
-   showlS         = foldr CONS NIL
+   showlS xs      = showl xs
    joinS ls       = concat ls
    reduceS f b l  = reduce f b l
    scanS f b l    = scan f b l
