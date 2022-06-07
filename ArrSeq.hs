@@ -9,7 +9,7 @@ import Par
 append l r = tabulateS f (ll + lr) where 
                ll = lengthS l
                lr = lengthS r
-               f n | n <= ll  = nthS l n
+               f n | n < ll  = nthS l n
                    |otherwise = nthS r (n - ll)
 
 showt l | lengthS l == 0 = EMPTY
@@ -28,7 +28,7 @@ contract f l | lengthS l == 0 = emptyS
              | lengthS l == 1 = l
              | otherwise = appendS z zs 
                   where
-                     (z,zs) = singletonS(f (nthS l 0) (nthS l 1) ) ||| contract f l
+                     (z,zs) = singletonS(f (nthS l 0) (nthS l 1) ) ||| contract f (dropS l 2)
 
 reduce f e l | lengthS l == 0 = e
              | lengthS l == 1 = f e (nthS l 0)
