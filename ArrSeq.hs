@@ -16,13 +16,13 @@ showt l | lengthS l == 0 = EMPTY
         | lengthS l == 1 = ELT (nthS l 0)
         | otherwise =  NODE l r
             where
-               (l,r) = (takeS xs half) ||| (dropS xs half)
-               half = div (lengthS xs) 2
+               (l,r) = (takeS l half) ||| (dropS l half)
+               half = div (lengthS l) 2
 
 showl l | lengthS l == 0 = NIL
         | otherwise = CONS x xs
             where
-               (x,xs) = (nthS l 0) ||| (dropS 1 l)
+               (x,xs) = (nthS l 0) ||| (dropS l 1)
 
 contract f l | lengthS l == 0 = emptyS
              | lengthS l == 1 = l
@@ -39,11 +39,11 @@ scan f e l | lengthS l == 0 = (emptyS, e)
            | otherwise = let (ys, r) = scan f e (contract f l)
                    in (expandir f l ys, r)
                   where
-                    expandir f l ys | lengthS l == 0 = emptyS
-                                    | lengthS l == 1 = ys
-                                    | otherwise = appendS (appendS (nthS ys 0) z) zs 
-                                       where
-                                          (z, zs) = singletonS(f (nthS ys 0) (nthS l 0)) ||| expandir f (dropS l 2) (dropS ys 1)
+                    expandir op l ys | lengthS l == 0 = emptyS
+                                     | lengthS l == 1 = ys
+                                     | otherwise = appendS (appendS (singletonS(nthS ys 0)) z) zs 
+                                        where
+                                          (z, zs) = singletonS(op (nthS ys 0) (nthS l 0)) ||| expandir op (dropS l 2) (dropS ys 1)
 
 
 instance Seq A.Arr where
