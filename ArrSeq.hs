@@ -6,7 +6,7 @@ import Seq
 import Par
 
 
-append l r = tabulateS f (ll + lr) where 
+append l r = tabulateS f (ll + lr) where
                ll = lengthS l
                lr = lengthS r
                f n | n < ll  = nthS l n
@@ -16,34 +16,40 @@ showt l | lengthS l == 0 = EMPTY
         | lengthS l == 1 = ELT (nthS l 0)
         | otherwise =  NODE l r
             where
-               (l,r) = (takeS l half) ||| (dropS l half)
+               (l,r) = takeS l half ||| dropS l half
                half = div (lengthS l) 2
 
 showl l | lengthS l == 0 = NIL
         | otherwise = CONS x xs
             where
-               (x,xs) = (nthS l 0) ||| (dropS l 1)
+               (x,xs) = nthS l 0 ||| dropS l 1
+
 
 contract f l | lengthS l == 0 = emptyS
              | lengthS l == 1 = l
-             | otherwise = appendS z zs 
-                  where
-                     (z,zs) = singletonS(f (nthS l 0) (nthS l 1) ) ||| contract f (dropS l 2)
+             | even (lengthS l) = contract f (tabulateS pairEven half)
+             | otherwise = contract f (tabulateS pairUneven (half+1))
+                where
+                  len = lengthS l
+                  half = div len 2
+                  pairEven i = f (nthS l (i*2)) (nthS l (i*2+1))
+                  pairUneven i | i == half = nthS l (i*2)
+                               | otherwise = pairEven i
+
 
 reduce f e l | lengthS l == 0 = e
              | lengthS l == 1 = f e (nthS l 0)
              | otherwise = reduce f e (contract f l)
 
+
+-- codigo robado no mg lo reescribiria
+
 scan f e l | lengthS l == 0 = (emptyS, e)
            | lengthS l == 1 = (singletonS e, f e (nthS l 0))
            | otherwise = let (ys, r) = scan f e (contract f l)
                    in (expandir f l ys, r)
-                  where
-                    expandir op l ys | lengthS l == 0 = emptyS
-                                     | lengthS l == 1 = ys
-                                     | otherwise = appendS (appendS (singletonS(nthS ys 0)) z) zs 
-                                        where
-                                          (z, zs) = singletonS(op (nthS ys 0) (nthS l 0)) ||| expandir op (dropS l 2) (dropS ys 1)
+                where
+                  expandir f arr brr = tabulateS (\i -> if even i then nthS brr (div i 2) else f (nthS brr (div i 2)) (nthS arr (i - 1))) (lengthS arr)
 
 
 instance Seq A.Arr where
@@ -63,5 +69,4 @@ instance Seq A.Arr where
    reduceS f b l  = reduce f b l
    scanS f b l    = scan f b l
    fromList l     = A.fromList l
-
 

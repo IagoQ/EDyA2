@@ -21,7 +21,8 @@ showt xs  = NODE l r
 showl [] = NIL
 showl (x:xs) = CONS x xs
 
-
+contractS op [] = []
+contractS op [x] = [x]
 contractS op (x:y:zs) = let (xy, zs') = op x y ||| contractS op zs
                           in xy:zs'
 
@@ -35,17 +36,15 @@ reduce f e [x] = f e x
 reduce f e xs  = reduce f e (contract f xs)
 
 
+expandir _ [] _ = []
+expandir _ [_] ys = ys
+expandir f (x:_:xs) (y:ys) = let (z, zs) = f y x ||| expandir f xs ys
+                                 in y:z:zs
+
 scan _ e []  = (emptyS , e)
 scan f e [x] = (singletonS e, f e x)
 scan f e xs  = let (ys, r) = scan f e (contract f xs)
                    in (expandir f xs ys, r)
-                  where
-                    expandir _ [] _ = []
-                    expandir _ [_] ys = ys
-                    expandir f (x:_:xs) (y:ys) = let (z, zs) = f y x ||| expandir f xs ys
-                                                     in y:z:zs
-
-
 
 instance Seq [] where
    emptyS         = []
@@ -66,3 +65,4 @@ instance Seq [] where
    fromList l    = l
 
 
+a = singletonS 1 :: [Int]
