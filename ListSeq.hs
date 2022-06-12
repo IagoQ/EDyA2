@@ -4,27 +4,28 @@ import Seq
 import Par
 
 
+
+parallelMap f [] = []
+parallelMap f (x:xs) =  let (y, ys) = f x ||| parallelMap f xs
+                        in y:ys
+append [] ys = ys
+append (x:xs) ys = x:(append xs ys)
+
 tabulate f n maxn | n == maxn = emptyS
                   | otherwise = let
                                   (x,xs) =  f n ||| tabulate f (n+1) maxn
                                 in
                                   x:xs
 
-
 showt []  = EMPTY
 showt [x] = ELT x
 showt xs  = NODE l r
               where
-                (l,r) = (takeS xs half) ||| (dropS xs half)
+                (l,r) = takeS xs half ||| dropS xs half
                 half = div (lengthS xs) 2
 
 showl [] = NIL
 showl (x:xs) = CONS x xs
-
-contractS op [] = []
-contractS op [x] = [x]
-contractS op (x:y:zs) = let (xy, zs') = op x y ||| contractS op zs
-                          in xy:zs'
 
 contract f []       = emptyS
 contract f [x]      = [x]
@@ -36,15 +37,15 @@ reduce f e [x] = f e x
 reduce f e xs  = reduce f e (contract f xs)
 
 
-expandir _ [] _ = []
-expandir _ [_] ys = ys
-expandir f (x:_:xs) (y:ys) = let (z, zs) = f y x ||| expandir f xs ys
+expand _ [] _ = []
+expand _ [_] ys = ys
+expand f (x:_:xs) (y:ys) = let (z, zs) = f y x ||| expand f xs ys
                                  in y:z:zs
 
 scan _ e []  = (emptyS , e)
 scan f e [x] = (singletonS e, f e x)
 scan f e xs  = let (ys, r) = scan f e (contract f xs)
-                   in (expandir f xs ys, r)
+                   in (expand f xs ys, r)
 
 instance Seq [] where
    emptyS         = []
@@ -52,7 +53,7 @@ instance Seq [] where
    lengthS l      = length l
    nthS l n       = l!!n
    tabulateS  f n = tabulate f 0 n
-   mapS f l       = map f l
+   mapS f l       = parallelMap f l
    filterS f l    = filter f l
    appendS l r    = l ++ r
    takeS l n      = take n l
@@ -62,7 +63,7 @@ instance Seq [] where
    joinS ls       = concat ls
    reduceS f b l  = reduce f b l
    scanS f b l    = scan f b l
-   fromList l    = l
+   fromList l     = l
 
 
 a = singletonS 1 :: [Int]

@@ -27,8 +27,8 @@ showl l | lengthS l == 0 = NIL
 
 contract f l | lengthS l == 0 = emptyS
              | lengthS l == 1 = l
-             | even (lengthS l) = contract f (tabulateS pairEven half)
-             | otherwise = contract f (tabulateS pairUneven (half+1))
+             | even (lengthS l) =  tabulateS pairEven half
+             | otherwise = tabulateS pairUneven (half+1)
                 where
                   len = lengthS l
                   half = div len 2
@@ -42,14 +42,17 @@ reduce f e l | lengthS l == 0 = e
              | otherwise = reduce f e (contract f l)
 
 
--- codigo robado no mg lo reescribiria
+
+expand f arr brr = tabulateS g (lengthS arr)
+                     where 
+                        g i |  even i = nthS brr (div i 2)  
+                            |  otherwise = f (nthS brr (div i 2)) (nthS arr (i - 1))
 
 scan f e l | lengthS l == 0 = (emptyS, e)
            | lengthS l == 1 = (singletonS e, f e (nthS l 0))
            | otherwise = let (ys, r) = scan f e (contract f l)
-                   in (expandir f l ys, r)
+                   in (expand f l ys, r)
                 where
-                  expandir f arr brr = tabulateS (\i -> if even i then nthS brr (div i 2) else f (nthS brr (div i 2)) (nthS arr (i - 1))) (lengthS arr)
 
 
 instance Seq A.Arr where
