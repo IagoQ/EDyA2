@@ -14,10 +14,10 @@ append l r = tabulateS f (ll + lr) where
 
 showt l | lengthS l == 0 = EMPTY
         | lengthS l == 1 = ELT (nthS l 0)
-        | otherwise =  NODE l r
+        | otherwise =  NODE ll rr
             where
                half = div (lengthS l) 2
-               (l,r) = takeS l half ||| dropS l half
+               (ll,rr) = takeS l half |||  dropS l half
 
 showl l | lengthS l == 0 = NIL
         | otherwise = CONS x xs
