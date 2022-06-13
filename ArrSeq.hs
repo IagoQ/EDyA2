@@ -52,7 +52,6 @@ scan f e l | lengthS l == 0 = (emptyS, e)
            | lengthS l == 1 = (singletonS e, f e (nthS l 0))
            | otherwise = let (ys, r) = scan f e (contract f l)
                    in (expand f l ys, r)
-                where
 
 
 instance Seq A.Arr where
