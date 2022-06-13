@@ -24,10 +24,9 @@ showl l | lengthS l == 0 = NIL
             where
                (x,xs) = nthS l 0 ||| dropS l 1
 
-
 contract f l | lengthS l == 0 = emptyS
              | lengthS l == 1 = l
-             | even (lengthS l) =  tabulateS pairEven half
+             | even len =  tabulateS pairEven half
              | otherwise = tabulateS pairUneven (half+1)
                 where
                   len = lengthS l
@@ -36,12 +35,9 @@ contract f l | lengthS l == 0 = emptyS
                   pairUneven i | i == half = nthS l (i*2)
                                | otherwise = pairEven i
 
-
 reduce f e l | lengthS l == 0 = e
              | lengthS l == 1 = f e (nthS l 0)
              | otherwise = reduce f e (contract f l)
-
-
 
 expand f arr brr = tabulateS g (lengthS arr)
                      where 
@@ -71,4 +67,3 @@ instance Seq A.Arr where
    reduceS f b l  = reduce f b l
    scanS f b l    = scan f b l
    fromList l     = A.fromList l
-
