@@ -16,8 +16,8 @@ showt l | lengthS l == 0 = EMPTY
         | lengthS l == 1 = ELT (nthS l 0)
         | otherwise =  NODE l r
             where
-               (l,r) = takeS l half ||| dropS l half
                half = div (lengthS l) 2
+               (l,r) = takeS l half ||| dropS l half
 
 showl l | lengthS l == 0 = NIL
         | otherwise = CONS x xs

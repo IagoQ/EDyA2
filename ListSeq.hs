@@ -25,8 +25,8 @@ showt []  = EMPTY
 showt [x] = ELT x
 showt xs  = NODE l r
               where
-                (l,r) = takeS xs half ||| dropS xs half
                 half = div (lengthS xs) 2
+                (l,r) = takeS xs half ||| dropS xs half
 
 showl [] = NIL
 showl (x:xs) = CONS x xs
