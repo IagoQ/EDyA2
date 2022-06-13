@@ -50,6 +50,7 @@ scan f e [x] = ([e], f e x)
 scan f e xs  = let (ys, r) = scan f e (contract f xs)
                    in (expand f xs ys, r)
 
+
 instance Seq [] where
    emptyS         = []
    singletonS  x  = [x]
